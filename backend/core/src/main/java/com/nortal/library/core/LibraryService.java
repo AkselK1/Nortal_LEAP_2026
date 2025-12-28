@@ -29,10 +29,23 @@ public class LibraryService {
     if (!memberRepository.existsById(memberId)) {
       return Result.failure("MEMBER_NOT_FOUND");
     }
+
+    Book entity = book.get();
+
+    if (entity.getLoanedTo() != null) {
+      return Result.failure("BOOK_UNAVAILABLE");
+    }
+    if (!entity.getReservationQueue().isEmpty() && !memberId.equals(entity.getReservationQueue().getFirst())) {
+      return Result.failure("QUEUE_EXISTS");
+    }
     if (!canMemberBorrow(memberId)) {
       return Result.failure("BORROW_LIMIT");
     }
-    Book entity = book.get();
+
+    if (!entity.getReservationQueue().isEmpty()) {
+      entity.getReservationQueue().removeFirst();
+    }
+
     entity.setLoanedTo(memberId);
     entity.setDueDate(LocalDate.now().plusDays(DEFAULT_LOAN_DAYS));
     bookRepository.save(entity);
@@ -64,6 +77,24 @@ public class LibraryService {
     }
 
     Book entity = book.get();
+    if (entity.getReservationQueue().contains(memberId)) {
+      return Result.failure("ALREADY_RESERVED");
+    }
+    if (memberId.equals(entity.getLoanedTo())) {
+      return Result.failure("ALREADY_LOANED");
+    }
+    if (entity.getReservationQueue().isEmpty() && !canMemberBorrow(memberId)) {
+      return Result.failure("BORROW_LIMIT");
+    }
+
+    // Reserving an available book loans it to the reserver
+    if (entity.getReservationQueue().isEmpty() && entity.getLoanedTo() == null && canMemberBorrow(memberId)) {
+      entity.setLoanedTo(memberId);
+      entity.setDueDate(LocalDate.now().plusDays(DEFAULT_LOAN_DAYS));
+      bookRepository.save(entity);
+      return Result.success();
+    }
+    // Adds member to the reservation queue
     entity.getReservationQueue().add(memberId);
     bookRepository.save(entity);
     return Result.success();
