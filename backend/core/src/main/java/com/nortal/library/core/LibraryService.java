@@ -199,17 +199,13 @@ public class LibraryService {
     if (!memberRepository.existsById(memberId)) {
       return new MemberSummary(false, "MEMBER_NOT_FOUND", List.of(), List.of());
     }
-    List<Book> books = bookRepository.findAll();
-    List<Book> loans = new ArrayList<>();
+    List<Book> loans = bookRepository.findByLoanedTo(memberId);
     List<ReservationPosition> reservations = new ArrayList<>();
-    for (Book book : books) {
-      if (memberId.equals(book.getLoanedTo())) {
-        loans.add(book);
-      }
+
+    for (Book book : bookRepository.findByReservationQueueContains(memberId)) {
       int idx = book.getReservationQueue().indexOf(memberId);
-      if (idx >= 0) {
+      if (idx >= 0)
         reservations.add(new ReservationPosition(book.getId(), idx));
-      }
     }
     return new MemberSummary(true, null, loans, reservations);
   }

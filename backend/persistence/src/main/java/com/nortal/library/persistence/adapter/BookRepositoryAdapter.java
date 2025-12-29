@@ -45,4 +45,14 @@ public class BookRepositoryAdapter implements BookRepository {
   public long countByLoanedTo(String memberId) {
     return jpaRepository.countByLoanedTo(memberId);
   }
+
+  @Override
+  public List<Book> findByLoanedTo(String memberId) {
+    return jpaRepository.findByLoanedTo(memberId);
+  }
+
+  @Override
+  public List<Book> findByReservationQueueContains(String memberId) {
+    return jpaRepository.findByReservationQueueContains(memberId);
+  }
 }

@@ -16,4 +16,8 @@ public interface BookRepository {
   boolean existsById(String id);
 
   long countByLoanedTo(String memberId);
+
+  List<Book> findByLoanedTo(String memberId);
+
+  List<Book> findByReservationQueueContains(String memberId);
 }
