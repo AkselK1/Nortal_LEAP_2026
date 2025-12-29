@@ -86,7 +86,6 @@ public class LibraryService {
     bookRepository.save(entity);
     return ResultWithNext.success(eligible);
   }
-  // EDIT canMemberBorrow() ASWELL
 
   public Result reserveBook(String bookId, String memberId) {
     Optional<Book> book = bookRepository.findById(bookId);
@@ -151,13 +150,7 @@ public class LibraryService {
     if (!memberRepository.existsById(memberId)) {
       return false;
     }
-    int active = 0;
-    for (Book book : bookRepository.findAll()) {
-      if (memberId.equals(book.getLoanedTo())) {
-        active++;
-      }
-    }
-    return active < MAX_LOANS;
+    return bookRepository.countByLoanedTo(memberId) < MAX_LOANS;
   }
 
   public List<Book> searchBooks(String titleContains, Boolean availableOnly, String loanedTo) {
