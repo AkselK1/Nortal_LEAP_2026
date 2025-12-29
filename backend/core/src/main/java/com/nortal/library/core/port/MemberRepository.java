@@ -1,8 +1,6 @@
 package com.nortal.library.core.port;
 
 import com.nortal.library.core.domain.Member;
-import jakarta.persistence.NamedQuery;
-
 import java.util.List;
 import java.util.Optional;
 
