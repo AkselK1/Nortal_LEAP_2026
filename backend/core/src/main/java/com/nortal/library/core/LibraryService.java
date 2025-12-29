@@ -60,11 +60,10 @@ public class LibraryService {
 
     Book entity = book.get();
 
-    if (entity.getLoanedTo() == null) {
+    if (entity.getLoanedTo() == null || memberId == null) {
       return ResultWithNext.failure();
     }
-
-    if (memberId == null || !memberId.equals(entity.getLoanedTo())) {
+    if (!memberId.equals(entity.getLoanedTo())) {
       return ResultWithNext.failure();
     }
 
