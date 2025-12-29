@@ -146,10 +146,8 @@ public class LibraryService {
     return Result.success();
   }
 
+  // canMemberBorrow() assumes that the validation of the member's existence has already been done
   public boolean canMemberBorrow(String memberId) {
-    if (!memberRepository.existsById(memberId)) {
-      return false;
-    }
     return bookRepository.countByLoanedTo(memberId) < MAX_LOANS;
   }
 
